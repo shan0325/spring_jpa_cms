@@ -9,13 +9,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,8 +44,14 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("auth/login",
                         requestFields(
-                                fieldWithPath("email").description("로그인 이메일"),
-                                fieldWithPath("password").description("로그인 비밀번호").optional()
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("grantType").type(JsonFieldType.STRING).description("grantType"),
+                                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("accessToken"),
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("refreshToken"),
+                                fieldWithPath("accessTokenExpiresIn").type(JsonFieldType.NUMBER).description("accessTokenExpiresIn")
                         )
                 ));
     }

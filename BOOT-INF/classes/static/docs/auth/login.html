@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>로그인</title>
+<title>Rest Docs Login API Document</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,6 +439,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
+<h1>Rest Docs Login API Document</h1>
+<div class="details">
+<span id="revnumber">version 0.0.1-SNAPSHOT</span>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -467,6 +471,32 @@ Host: localhost:8080
 {"email":"admin@naver.com","password":"1234"}</code></pre>
 </div>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이메일</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>password</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">비밀번호</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_response"><a class="link" href="#_response">RESPONSE</a></h3>
@@ -482,9 +512,45 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Length: 398
 
-{"grantType":"bearer","accessToken":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiYXV0aCI6IlJPTEVfQURNSU4iLCJleHAiOjE2NDc4ODE1MTl9.6inmw2Bv07wdiPgX-nNgWE7jH3_e1KAIllDqfxv5PL33tuvMyqedG_PYkbdjKYD0cOqoOBgNTYOrnzLVi4AYeQ","refreshToken":"eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2NDg0ODQ1MTl9.Xgc7A0enDcBN74FONg3e_fLeGmy_FLNb-pxxYoZMGRUHZ-CaOwIt3q7qUdU7b8hUeuiPcADSZ0bDn5rka4bfTQ","accessTokenExpiresIn":1647881519774}</code></pre>
+{"grantType":"bearer","accessToken":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiYXV0aCI6IlJPTEVfQURNSU4iLCJleHAiOjE2NDc5NjEzMDh9.AqdF1omObM2r3e-NDDnsBrcs6oPzNFXSnIZEp0a7P3cG7dD98Qw3wU9dtWnpEAexgkfD1GD5VdyLuLuhx5NeJg","refreshToken":"eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2NDg1NjQzMDh9.UR00fG41Ay1k3cJrXEL7rq2NMoDxNWI6k-41QBTZStpVi_U9anL1gda9VNH6EL1yFofaDxL7QZ0PT-2H-rFvUA","accessTokenExpiresIn":1647961308180}</code></pre>
 </div>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grantType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">grantType</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">accessToken</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>refreshToken</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">refreshToken</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>accessTokenExpiresIn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">accessTokenExpiresIn</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -492,7 +558,7 @@ Content-Length: 398
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2022-03-22 01:20:52 +0900
+Last updated 2022-03-22 23:30:06 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

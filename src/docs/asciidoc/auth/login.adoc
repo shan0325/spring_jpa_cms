@@ -2,7 +2,7 @@
 ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
-
+= Rest Docs Login API Document
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -13,9 +13,9 @@ endif::[]
 == 로그인
 
 === REQUEST
-
 include::{snippets}/auth/login/http-request.adoc[]
+include::{snippets}/auth/login/request-fields.adoc[]
 
 === RESPONSE
-
 include::{snippets}/auth/login/http-response.adoc[]
+include::{snippets}/auth/login/response-fields.adoc[]
