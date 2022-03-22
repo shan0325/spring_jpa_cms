@@ -10,9 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.*;
+
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
 class MemberServiceTest {
 
     @Autowired
@@ -26,14 +27,19 @@ class MemberServiceTest {
                 .password("1234")
                 .email("member@email.com")
                 .hp("01011112222")
+                .authorityId(2L)
                 .build();
 
         //when
-        MemberDto.Response newMember = memberService.join(joinMember);
-        System.out.println("newMember = " + newMember);
+//        MemberDto.Response newMember = memberService.join(joinMember);
+//        System.out.println("newMember = " + newMember);
+
+        assertThatThrownBy(() -> memberService.join(joinMember))
+                .isInstanceOf(RuntimeException.class);
 
         //then
-        Assertions.assertThat(newMember.getName()).isEqualTo("회원");
+        //assertThat(newMember.getName()).isEqualTo("회원");
+
     }
 
     @Test
@@ -44,7 +50,7 @@ class MemberServiceTest {
         MemberDto.Join joinMember = MemberDto.Join.builder()
                 .name("회원1")
                 .password("1234")
-                .email("member1@email.com")
+                .email("member0@email.com")
                 .hp("01011112222")
                 .build();
 

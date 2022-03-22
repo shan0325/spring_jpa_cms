@@ -70,7 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
-            .antMatchers(RestControllerBase.API_URI_PREFIX + "/auth/**").permitAll()
+                .antMatchers("/docs/**").permitAll()
+                .antMatchers(RestControllerBase.API_URI_PREFIX + "/auth/**").permitAll()
             .anyRequest().authenticated();   // 나머지 API 는 전부 인증 필요
     }
 

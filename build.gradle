@@ -7,8 +7,11 @@ buildscript {
 plugins {
 	id 'org.springframework.boot' version '2.6.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	//querydsl 추가
+	// querydsl 추가
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	// Asciidoctor 플러그인 적용
+	// gradle 7 부터는 org.asciidoctor.convert가 아닌asciidoctor.jvm.convert를 사용해야한다.
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
 	id 'java'
 }
 
@@ -40,6 +43,8 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -73,3 +78,45 @@ compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝
+
+// spring-restdocs 추가 시작
+ext {
+	// Snippet 의 생성 위치를 지정
+	snippetsDir = file('build/generated-snippets')
+}
+
+test {
+	// Snippets 디렉토리를 출력으로 작업하도록 설정
+	outputs.dir snippetsDir
+}
+
+asciidoctor {
+	// Snippets 디렉토리를 Input 디렉토리로 설정
+	inputs.dir snippetsDir
+	// 문서 생성 전 테스트가 실행되도록 test 에 종속 설정
+	dependsOn test
+}
+
+asciidoctor.doFirst {
+	delete file('src/main/resources/static/docs')
+}
+
+bootJar {
+	// 빌드 전 문서 생성 확인
+	dependsOn asciidoctor
+	copy {
+		from "${asciidoctor.outputDir}"
+		into 'BOOT-INF/classes/static/docs'
+	}
+}
+
+task copyDocument(type: Copy) {
+	dependsOn asciidoctor
+	from file("build/docs/asciidoc")
+	into file("src/main/resources/static/docs")
+}
+
+build {
+	dependsOn copyDocument
+}
+// spring-restdocs 추가 끝

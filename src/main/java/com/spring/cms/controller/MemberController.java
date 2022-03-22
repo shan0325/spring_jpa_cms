@@ -13,7 +13,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(RestControllerBase.API_URI_PREFIX)
-public class MemberController extends RestControllerBase {
+public class MemberController {
 
     private final MemberService memberService;
 

@@ -1,0 +1,21 @@
+// 예시
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+== 로그인
+
+=== REQUEST
+
+include::{snippets}/auth/login/http-request.adoc[]
+
+=== RESPONSE
+
+include::{snippets}/auth/login/http-response.adoc[]
