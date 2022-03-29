@@ -45,12 +45,6 @@ public class Member extends BaseEntity {
         this.status = status;
     }
 
-    //==연관관계 메서드==//
-    public void addMemberAuthority(MemberAuthority memberAuthority) {
-        this.memberAuthorities.add(memberAuthority);
-        memberAuthority.setMember(this);
-    }
-
     //==생성 메서드==//
     public static Member createMember(String name, String password, String email, String hp, MemberStatus status, MemberAuthority... memberAuthoritys) {
         Member member = Member.builder()
@@ -62,7 +56,7 @@ public class Member extends BaseEntity {
                 .build();
 
         for (MemberAuthority memberAuthority : memberAuthoritys) {
-            member.addMemberAuthority(memberAuthority);
+            memberAuthority.addMemberAuthority(member);
         }
         return member;
     }

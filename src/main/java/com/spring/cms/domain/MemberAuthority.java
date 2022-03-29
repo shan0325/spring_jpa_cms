@@ -28,14 +28,18 @@ public class MemberAuthority {
         this.authority = authority;
     }
 
-    public void setMember(Member member) {
+    //==연관관계 메서드==//
+    public void addMemberAuthority(Member member) {
+        if (this.member != null) {
+            this.member.getMemberAuthorities().remove(this);
+        }
         this.member = member;
+        member.getMemberAuthorities().add(this);
     }
 
     //==생성 메서드==//
     public static MemberAuthority createMemberAuthority(Authority authority) {
         return new MemberAuthority(authority);
     }
-
 
 }

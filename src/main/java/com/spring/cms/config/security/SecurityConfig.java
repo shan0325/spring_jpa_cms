@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring()
-                .antMatchers("/h2-console/**", "/favicon.ico");
+                .antMatchers("/h2-console/**", "/favicon.ico", "/docs/**");
     }
 
     @Override
@@ -70,7 +70,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
-                .antMatchers("/docs/**").permitAll()
                 .antMatchers(RestControllerBase.API_URI_PREFIX + "/auth/**").permitAll()
             .anyRequest().authenticated();   // 나머지 API 는 전부 인증 필요
     }
