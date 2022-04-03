@@ -1,18 +1,18 @@
 package com.spring.cms.config;
 
-import com.spring.cms.domain.Member;
-import com.spring.cms.exception.EntityNotFoundException;
-import com.spring.cms.exception.MemberNotFoundException;
+import com.spring.cms.exception.MemberException;
 import com.spring.cms.repository.MemberRepository;
-import com.spring.cms.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
-import java.util.UUID;
+
+import static com.spring.cms.exception.MemberException.MemberExceptionType.NOT_FOUND_MEMBER;
 
 @RequiredArgsConstructor
 @EnableJpaAuditing
@@ -24,12 +24,15 @@ public class AuditorAwareConfig {
     @Bean
     public AuditorAware<String> auditorAware() {
         return () -> {
-            Long memberId = SecurityUtil.getCurrentMemberId();
+            String email = "";
 
-            Member findMember = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new MemberNotFoundException());
-
-            return Optional.of(findMember.getEmail());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getName() != null) {
+                email = memberRepository.findById(Long.parseLong(authentication.getName()))
+                        .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER))
+                        .getEmail();
+            }
+            return Optional.of(email);
         };
     }
 }

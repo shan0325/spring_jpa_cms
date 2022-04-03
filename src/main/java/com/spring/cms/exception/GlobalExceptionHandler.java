@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -198,29 +199,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Object> handleMemberNotFoundException(final MemberNotFoundException ex) {
-        String message = "회원을 찾을 수 없습니다.";
-        if(ex.getEmail() != null) {
-            message = String.format("[%s] 회원을 찾을 수 없습니다.", ex.getEmail());
-        }
-        return buildResponseEntity(new ApiError(HttpStatus.NOT_FOUND, message));
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<Object> handleBaseException(BaseException ex) {
+        BaseExceptionType baseExceptionType = ex.getBaseExceptionType();
+        return buildResponseEntity(new ApiError(baseExceptionType.getHttpStatus()
+                , baseExceptionType.getErrorCode()
+                , baseExceptionType.getErrorMessage()));
     }
-
-    @ExceptionHandler(MemberDuplicatedException.class)
-	public ResponseEntity<Object> handleUserDuplicatedException(final MemberDuplicatedException ex) {
-        String message = String.format("[%s] 중복된 계정이 있습니다.", ex.getEmail());
-		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, message));
-	}
-
-	@ExceptionHandler(AuthorityNotExistException.class)
-	public ResponseEntity<Object> handleAuthorityNotExistException(AuthorityNotExistException ex) {
-        String message = String.format("[%s] 권한이 존재하지 않습니다.", ex.getAuthorityId());
-        if (ex.getAuthority() != null) {
-            message = String.format("[%s] 권한이 존재하지 않습니다.", ex.getAuthority());
-        }
-		return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, message));
-	}
 
 	private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
 		return new ResponseEntity<>(apiError, apiError.getStatus());

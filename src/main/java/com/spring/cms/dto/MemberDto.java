@@ -49,9 +49,7 @@ public class MemberDto {
 
     }
 
-    @Setter
-    @Getter
-    @ToString
+    @Data
     public static class Response {
         private Long id;
         private String name;

@@ -28,9 +28,10 @@ import java.util.Set;
 public class ApiError {
 
     private HttpStatus status;
+    private String errorCode;
+    private String message;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime timestamp;
-    private String message;
     private String debugMessage;
     private List<ApiSubError> subErrors;
 
@@ -54,6 +55,13 @@ public class ApiError {
         this.status = status;
         this.message = "Unexpected error";
         this.debugMessage = ex.getLocalizedMessage();
+    }
+
+    public ApiError(HttpStatus status, String errorCode, String message) {
+        this();
+        this.status = status;
+        this.errorCode = errorCode;
+        this.message = message;
     }
 
     public ApiError(HttpStatus status, String message, Throwable ex) {

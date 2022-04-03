@@ -1,8 +1,7 @@
 package com.spring.cms.config.security;
 
 import com.spring.cms.domain.Member;
-import com.spring.cms.exception.EntityNotFoundException;
-import com.spring.cms.exception.MemberNotFoundException;
+import com.spring.cms.exception.MemberException;
 import com.spring.cms.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.spring.cms.exception.MemberException.MemberExceptionType.NOT_FOUND_MEMBER;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new MemberNotFoundException(username));
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
     }
 
     // DB 에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴

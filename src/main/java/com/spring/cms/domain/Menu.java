@@ -1,12 +1,20 @@
 package com.spring.cms.domain;
 
 import com.spring.cms.domain.common.BaseEntity;
+import com.spring.cms.dto.MenuDto;
 import com.spring.cms.enums.MenuType;
+import javafx.scene.Parent;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
 public class Menu extends BaseEntity {
 
@@ -36,17 +44,34 @@ public class Menu extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MenuType menuType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_manager_id")
-    private BoardManager boardManager;
-
-    private void setParent(Menu parent) {
-        this.parent = parent;
+    @Builder(access = AccessLevel.PRIVATE)
+    public Menu(Integer level, String name, String description, Character useYn, MenuType menuType) {
+        this.level = level;
+        this.name = name;
+        this.description = description;
+        this.useYn = useYn;
+        this.menuType = menuType;
     }
 
     //==연관관계 메서드==//
-    public void addChildMenu(Menu child) {
-        this.child.add(child);
-        child.setParent(this);
+    public void addParentMenu(Menu parent) {
+        this.parent = parent;
+        if (parent != null) {
+            parent.getChild().add(this);
+        }
+    }
+
+    //==생성 메서드==//
+    public static Menu createMenu(MenuDto.Create create, Menu parent) {
+        Menu menu = Menu.builder()
+                .level(create.getLevel())
+                .name(create.getName())
+                .description(create.getDescription())
+                .useYn(create.getUseYn())
+                .menuType(MenuType.valueOf(create.getMenuType()))
+                .build();
+
+        menu.addParentMenu(parent);
+        return menu;
     }
 }

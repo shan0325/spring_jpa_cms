@@ -2,12 +2,15 @@ package com.spring.cms.domain;
 
 import com.spring.cms.domain.common.BaseEntity;
 import com.spring.cms.enums.BoardType;
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
+@NoArgsConstructor
+@Getter
 @Entity
 public class BoardManager extends BaseEntity {
 
@@ -29,4 +32,24 @@ public class BoardManager extends BaseEntity {
 
     @Column(length = 1)
     private Character commentUseYn;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public BoardManager(String name, String description, BoardType boardType, Character boardUseYn, Character commentUseYn) {
+        this.name = name;
+        this.description = description;
+        this.boardType = boardType;
+        this.boardUseYn = boardUseYn;
+        this.commentUseYn = commentUseYn;
+    }
+
+    //==생성 메서드==//
+    public static BoardManager createBoardManager(String name, String description, BoardType boardType, Character boardUseYn, Character commentUseYn) {
+        return BoardManager.builder()
+                .name(name)
+                .description(description)
+                .boardType(boardType)
+                .boardUseYn(boardUseYn)
+                .commentUseYn(commentUseYn)
+                .build();
+    }
 }

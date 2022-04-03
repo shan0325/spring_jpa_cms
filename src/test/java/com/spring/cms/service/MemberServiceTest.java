@@ -31,15 +31,13 @@ class MemberServiceTest {
                 .build();
 
         //when
-//        MemberDto.Response newMember = memberService.join(joinMember);
-//        System.out.println("newMember = " + newMember);
+        MemberDto.Response newMember = memberService.join(joinMember);
 
-        assertThatThrownBy(() -> memberService.join(joinMember))
-                .isInstanceOf(RuntimeException.class);
+        /*assertThatThrownBy(() -> memberService.join(joinMember))
+                .isInstanceOf(RuntimeException.class);*/
 
         //then
-        //assertThat(newMember.getName()).isEqualTo("회원");
-
+        assertThat(newMember.getName()).isEqualTo("회원");
     }
 
     @Test
