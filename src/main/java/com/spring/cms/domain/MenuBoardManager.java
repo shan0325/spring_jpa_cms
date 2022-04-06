@@ -1,5 +1,8 @@
 package com.spring.cms.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @NoArgsConstructor
 @Getter
 @Entity
@@ -17,6 +21,7 @@ public class MenuBoardManager {
     @Column(name = "menu_board_manager_id")
     private Long id;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
@@ -33,9 +38,13 @@ public class MenuBoardManager {
 
     //==생성 메서드==//
     public static MenuBoardManager createMenuBoardManager(Menu menu, BoardManager boardManager) {
-        return MenuBoardManager.builder()
+        MenuBoardManager menuBoardManager = MenuBoardManager.builder()
                 .menu(menu)
                 .boardManager(boardManager)
                 .build();
+
+        menu.setMenuBoardManager(menuBoardManager);
+
+        return menuBoardManager;
     }
 }

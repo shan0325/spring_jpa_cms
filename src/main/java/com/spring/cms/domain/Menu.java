@@ -30,8 +30,14 @@ public class Menu extends BaseEntity {
     @OneToMany(mappedBy = "parent")
     private List<Menu> child = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "top_id")
+    private Menu top;
+
     @Column(nullable = false)
     private Integer level;
+
+    private Integer ord;
 
     @Column(length = 100, nullable = false)
     private String name;
@@ -42,11 +48,23 @@ public class Menu extends BaseEntity {
     private Character useYn;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MenuType menuType;
 
+    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private MenuBoardManager menuBoardManager;
+
+    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private MenuLink menuLink;
+
+    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private MenuContents menuContents;
+
     @Builder(access = AccessLevel.PRIVATE)
-    public Menu(Integer level, String name, String description, Character useYn, MenuType menuType) {
+    public Menu(Menu top, Integer level, Integer ord, String name, String description, Character useYn, MenuType menuType) {
+        this.top = top;
         this.level = level;
+        this.ord = ord;
         this.name = name;
         this.description = description;
         this.useYn = useYn;
@@ -61,10 +79,24 @@ public class Menu extends BaseEntity {
         }
     }
 
+    public void setMenuBoardManager(MenuBoardManager menuBoardManager) {
+        this.menuBoardManager = menuBoardManager;
+    }
+
+    public void setMenuLink(MenuLink menuLink) {
+        this.menuLink = menuLink;
+    }
+
+    public void setMenuContents(MenuContents menuContents) {
+        this.menuContents = menuContents;
+    }
+
     //==생성 메서드==//
-    public static Menu createMenu(MenuDto.Create create, Menu parent) {
+    public static Menu createMenu(MenuDto.Create create, Menu parent, Menu top) {
         Menu menu = Menu.builder()
+                .top(top)
                 .level(create.getLevel())
+                .ord(create.getOrd())
                 .name(create.getName())
                 .description(create.getDescription())
                 .useYn(create.getUseYn())

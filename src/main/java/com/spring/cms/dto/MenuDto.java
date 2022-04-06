@@ -2,7 +2,9 @@ package com.spring.cms.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.spring.cms.annotation.Enum;
+import com.spring.cms.domain.MenuBoardManager;
 import com.spring.cms.domain.MenuContents;
+import com.spring.cms.domain.MenuLink;
 import com.spring.cms.enums.MenuType;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +22,12 @@ public class MenuDto {
     @ToString
     public static class Create {
         private Long parentId;
+        private Long topId;
 
         @NotNull(message = "레벨을 입력해주세요")
         private Integer level;
+
+        private Integer ord;
 
         @NotBlank(message = "메뉴명을 입력해주세요")
         private String name;
@@ -43,9 +48,12 @@ public class MenuDto {
     }
 
     @Data
-    public static class Response {
+    public static class QueryResponse {
         private Long id;
+        private Long parentId;
+        private Long topId;
         private Integer level;
+        private Integer ord;
         private String name;
         private String description;
         private Character useYn;
@@ -58,9 +66,12 @@ public class MenuDto {
         private LocalDateTime lastModifiedDate;
 
         @QueryProjection
-        public Response(Long id, Integer level, String name, String description, Character useYn, MenuType menuType, Long boardManagerId, String link, String linkTarget, Long contentsId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+        public QueryResponse(Long id, Long parentId, Long topId, Integer level, Integer ord, String name, String description, Character useYn, MenuType menuType, Long boardManagerId, String link, String linkTarget, Long contentsId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
             this.id = id;
+            this.parentId = parentId;
+            this.topId = topId;
             this.level = level;
+            this.ord = ord;
             this.name = name;
             this.description = description;
             this.useYn = useYn;
@@ -71,6 +82,26 @@ public class MenuDto {
             this.contentsId = contentsId;
             this.createdDate = createdDate;
             this.lastModifiedDate = lastModifiedDate;
+        }
+    }
+
+    @Data
+    public static class AllMenusQueryResponse {
+        private Long id;
+        private Long parentId;
+        private Long topId;
+        private Integer level;
+        private Integer ord;
+        private String name;
+
+        @QueryProjection
+        public AllMenusQueryResponse(Long id, Long parentId, Long topId, Integer level, Integer ord, String name) {
+            this.id = id;
+            this.parentId = parentId;
+            this.topId = topId;
+            this.level = level;
+            this.ord = ord;
+            this.name = name;
         }
     }
 }
