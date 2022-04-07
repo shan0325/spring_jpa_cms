@@ -9,6 +9,7 @@ import com.spring.cms.exception.ContentsException;
 import com.spring.cms.exception.MenuException;
 import com.spring.cms.repository.BoardManagerRepository;
 import com.spring.cms.repository.ContentsRepository;
+import com.spring.cms.repository.menu.MenuLinkRepository;
 import com.spring.cms.repository.menu.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,12 +32,16 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final BoardManagerRepository boardManagerRepository;
     private final ContentsRepository contentsRepository;
+    private final MenuLinkRepository menuLinkRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
     public MenuDto.QueryResponse createMenu(MenuDto.Create create) {
         Menu parentMenu = null;
         Menu topMenu = null;
+        BoardManager boardManager = null;
+        MenuLink menuLink = null;
+        Contents contents = null;
 
         Long parentId = create.getParentId();
         if (parentId != null && topMenu != null) {
@@ -46,7 +51,6 @@ public class MenuService {
             topMenu = menuRepository.findById(create.getTopId())
                     .orElseThrow(() -> new MenuException(NOT_FOUND_TOP_MENU));
         }
-        Menu menu = Menu.createMenu(create, parentMenu, topMenu);
 
         MenuType menuType = MenuType.valueOf(create.getMenuType());
         if (menuType.equals(MenuType.BOARD)) {
@@ -54,31 +58,28 @@ public class MenuService {
             if (boardManagerId == null) {
                 throw new BoardManagerException(BOARD_MANAGER_ID_IS_NULL);
             }
-
-            BoardManager boardManager = boardManagerRepository.findById(boardManagerId)
+            boardManager = boardManagerRepository.findById(boardManagerId)
                     .orElseThrow(() -> new BoardManagerException(BOARD_MANAGER_NOT_FOUND));
-
-            MenuBoardManager.createMenuBoardManager(menu, boardManager);
         } else if (menuType.equals(MenuType.LINK)) {
-            MenuLink.createMenuLink(create.getLink(), MenuLinkTarget.valueOf(create.getLinkTarget()), menu);
+            menuLink = MenuLink.createMenuLink(create.getLink(), MenuLinkTarget.valueOf(create.getLinkTarget()));
+            menuLinkRepository.save(menuLink);
         } else if (menuType.equals(MenuType.CONTENTS)) {
             Long contentsId = create.getContentsId();
             if (contentsId == null) {
                 throw new ContentsException(CONTENTS_ID_IS_NULL);
             }
-
-            Contents contents = contentsRepository.findById(contentsId)
+            contents = contentsRepository.findById(contentsId)
                     .orElseThrow(() -> new ContentsException(CONTENTS_NOT_FOUND));
-
-            MenuContents.createMenuContents(menu, contents);
         }
+
+        Menu menu = Menu.createMenu(create, parentMenu, topMenu, boardManager, menuLink, contents);
         menuRepository.save(menu);
 
         return menuRepository.response(menu.getId());
     }
 
     public List<MenuDto.AllMenusQueryResponse> getAllMenus() {
-        return menuRepository.findAllMenus();
+        return menuRepository.findAllMenusDto();
     }
 
 }

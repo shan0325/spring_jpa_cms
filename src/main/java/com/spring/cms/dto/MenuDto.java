@@ -2,9 +2,6 @@ package com.spring.cms.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.spring.cms.annotation.Enum;
-import com.spring.cms.domain.MenuBoardManager;
-import com.spring.cms.domain.MenuContents;
-import com.spring.cms.domain.MenuLink;
 import com.spring.cms.enums.MenuType;
 import lombok.Builder;
 import lombok.Data;
@@ -103,5 +100,15 @@ public class MenuDto {
             this.ord = ord;
             this.name = name;
         }
+    }
+
+    @Data
+    public static class AllMenusResponse {
+        private Long id;
+        private Long parentId;
+        private Long topId;
+        private Integer level;
+        private Integer ord;
+        private String name;
     }
 }

@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JoinColumnOrFormula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -51,17 +52,21 @@ public class Menu extends BaseEntity {
     @Column(nullable = false)
     private MenuType menuType;
 
-    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private MenuBoardManager menuBoardManager;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_manager_id")
+    private BoardManager boardManager;
 
-    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_link_id")
     private MenuLink menuLink;
 
-    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private MenuContents menuContents;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contents_id")
+    private Contents contents;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Menu(Menu top, Integer level, Integer ord, String name, String description, Character useYn, MenuType menuType) {
+    public Menu(Menu top, Integer level, Integer ord, String name, String description, Character useYn,
+                MenuType menuType, BoardManager boardManager, MenuLink menuLink, Contents contents) {
         this.top = top;
         this.level = level;
         this.ord = ord;
@@ -69,6 +74,9 @@ public class Menu extends BaseEntity {
         this.description = description;
         this.useYn = useYn;
         this.menuType = menuType;
+        this.boardManager = boardManager;
+        this.menuLink = menuLink;
+        this.contents = contents;
     }
 
     //==연관관계 메서드==//
@@ -79,20 +87,8 @@ public class Menu extends BaseEntity {
         }
     }
 
-    public void setMenuBoardManager(MenuBoardManager menuBoardManager) {
-        this.menuBoardManager = menuBoardManager;
-    }
-
-    public void setMenuLink(MenuLink menuLink) {
-        this.menuLink = menuLink;
-    }
-
-    public void setMenuContents(MenuContents menuContents) {
-        this.menuContents = menuContents;
-    }
-
     //==생성 메서드==//
-    public static Menu createMenu(MenuDto.Create create, Menu parent, Menu top) {
+    public static Menu createMenu(MenuDto.Create create, Menu parent, Menu top, BoardManager boardManager, MenuLink menuLink, Contents contents) {
         Menu menu = Menu.builder()
                 .top(top)
                 .level(create.getLevel())
@@ -101,6 +97,9 @@ public class Menu extends BaseEntity {
                 .description(create.getDescription())
                 .useYn(create.getUseYn())
                 .menuType(MenuType.valueOf(create.getMenuType()))
+                .boardManager(boardManager)
+                .menuLink(menuLink)
+                .contents(contents)
                 .build();
 
         menu.addParentMenu(parent);

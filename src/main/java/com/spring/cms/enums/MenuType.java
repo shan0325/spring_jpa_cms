@@ -1,5 +1,5 @@
 package com.spring.cms.enums;
 
 public enum MenuType {
-    EMPTY, BOARD, CONTENTS, LINK
+    MENU, BOARD, CONTENTS, LINK
 }

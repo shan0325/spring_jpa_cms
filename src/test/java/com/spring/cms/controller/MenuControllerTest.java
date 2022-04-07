@@ -131,7 +131,7 @@ class MenuControllerTest {
 
     @Test
     @Rollback(value = false)
-    public void createMenuEmpty() throws Exception {
+    public void createMenuMenu() throws Exception {
         MenuDto.Create create = MenuDto.Create.builder()
                 .parentId(null)
                 .topId(null)
@@ -140,7 +140,7 @@ class MenuControllerTest {
                 .name("메뉴")
                 .description("메뉴")
                 .useYn('Y')
-                .menuType("EMPTY")
+                .menuType("MENU")
                 .build();
 
         this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menu")

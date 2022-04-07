@@ -25,28 +25,17 @@ public class MenuLink {
     @Column(nullable = false)
     private MenuLinkTarget linkTarget;
 
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id", nullable = false)
-    private Menu menu;
-
     @Builder(access = AccessLevel.PRIVATE)
-    public MenuLink(String link, MenuLinkTarget linkTarget, Menu menu) {
+    public MenuLink(String link, MenuLinkTarget linkTarget) {
         this.link = link;
         this.linkTarget = linkTarget;
-        this.menu = menu;
     }
 
     //==생성 메서드==//
-    public static MenuLink createMenuLink(String link, MenuLinkTarget linkTarget, Menu menu) {
-        MenuLink menuLink = MenuLink.builder()
+    public static MenuLink createMenuLink(String link, MenuLinkTarget linkTarget) {
+        return MenuLink.builder()
                 .link(link)
                 .linkTarget(linkTarget)
-                .menu(menu)
                 .build();
-
-        menu.setMenuLink(menuLink);
-
-        return menuLink;
     }
 }

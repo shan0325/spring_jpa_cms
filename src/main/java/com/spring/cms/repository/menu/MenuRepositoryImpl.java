@@ -1,6 +1,7 @@
 package com.spring.cms.repository.menu;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.spring.cms.domain.Menu;
 import com.spring.cms.dto.MenuDto;
 import com.spring.cms.dto.QMenuDto_AllMenusQueryResponse;
 import com.spring.cms.dto.QMenuDto_QueryResponse;
@@ -9,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static com.spring.cms.domain.QMenu.menu;
-import static com.spring.cms.domain.QMenuBoardManager.menuBoardManager;
-import static com.spring.cms.domain.QMenuContents.menuContents;
 import static com.spring.cms.domain.QMenuLink.menuLink;
 
 @RequiredArgsConstructor
@@ -31,23 +30,21 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
                         menu.description,
                         menu.useYn,
                         menu.menuType,
-                        menuBoardManager.boardManager.id,
+                        menu.boardManager.id,
                         menuLink.link,
                         menuLink.linkTarget.stringValue(),
-                        menuContents.contents.id,
+                        menu.contents.id,
                         menu.createdDate,
                         menu.lastModifiedDate
                 ))
                 .from(menu)
-                .leftJoin(menu.menuBoardManager, menuBoardManager)
                 .leftJoin(menu.menuLink, menuLink)
-                .leftJoin(menu.menuContents, menuContents)
                 .where(menu.id.eq(menuId))
                 .fetchOne();
     }
 
     @Override
-    public List<MenuDto.AllMenusQueryResponse> findAllMenus() {
+    public List<MenuDto.AllMenusQueryResponse> findAllMenusDto() {
         return queryFactory
                 .select(new QMenuDto_AllMenusQueryResponse(
                     menu.id,
@@ -58,6 +55,19 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
                     menu.name
                 ))
                 .from(menu)
+                .fetch();
+    }
+
+    @Override
+    public List<Menu> findAllMenus() {
+        return queryFactory
+                .selectFrom(menu)
+                .leftJoin(menu.parent)
+                .fetchJoin()
+                .orderBy(
+                        menu.parent.id.asc().nullsFirst(),
+                        menu.createdDate.asc()
+                )
                 .fetch();
     }
 }
