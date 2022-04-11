@@ -1,10 +1,12 @@
 package com.spring.cms.repository.menu;
 
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.cms.domain.Menu;
-import com.spring.cms.dto.MenuDto;
-import com.spring.cms.dto.QMenuDto_AllMenusQueryResponse;
-import com.spring.cms.dto.QMenuDto_QueryResponse;
+import com.spring.cms.dto.menu.MenuQueryDto;
+import com.spring.cms.dto.menu.QMenuQueryDto_AllMenusResponseQuery;
+import com.spring.cms.dto.menu.QMenuQueryDto_CreateResponseQuery;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -18,9 +20,9 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MenuDto.QueryResponse response(Long menuId) {
+    public MenuQueryDto.CreateResponseQuery findCreatedMenu(Long menuId) {
         return queryFactory
-                .select(new QMenuDto_QueryResponse(
+                .select(new QMenuQueryDto_CreateResponseQuery(
                         menu.id,
                         menu.parent.id,
                         menu.top.id,
@@ -44,30 +46,31 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
     }
 
     @Override
-    public List<MenuDto.AllMenusQueryResponse> findAllMenusDto() {
+    public List<MenuQueryDto.AllMenusResponseQuery> findMenus(boolean parentIsNull, List<Long> menuIds) {
         return queryFactory
-                .select(new QMenuDto_AllMenusQueryResponse(
-                    menu.id,
-                    menu.parent.id,
-                    menu.top.id,
-                    menu.level,
-                    menu.ord,
-                    menu.name
+                .select(new QMenuQueryDto_AllMenusResponseQuery(
+                        menu.id,
+                        menu.parent.id,
+                        menu.top.id,
+                        menu.level,
+                        menu.ord,
+                        menu.name
                 ))
                 .from(menu)
+                .where(
+                        parentIsNull(parentIsNull),
+                        parentIdIn(menuIds)
+                )
+                .orderBy(menu.ord.asc(), menu.createdDate.desc())
                 .fetch();
     }
 
-    @Override
-    public List<Menu> findAllMenus() {
-        return queryFactory
-                .selectFrom(menu)
-                .leftJoin(menu.parent)
-                .fetchJoin()
-                .orderBy(
-                        menu.parent.id.asc().nullsFirst(),
-                        menu.createdDate.asc()
-                )
-                .fetch();
+    private BooleanExpression parentIsNull(boolean parentIsNull) {
+        return parentIsNull == true ? menu.parent.isNull() : null;
     }
+
+    private BooleanExpression parentIdIn(List<Long> menuIds) {
+        return menuIds != null ? menu.parent.id.in(menuIds) : null;
+    }
+
 }

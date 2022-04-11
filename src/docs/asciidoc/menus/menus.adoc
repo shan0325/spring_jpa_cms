@@ -1,0 +1,29 @@
+// 예시
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+= Rest Docs Menu API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+== 메뉴
+
+=== 메뉴생성
+==== REQUEST
+include::{snippets}/menus/create/http-request.adoc[]
+include::{snippets}/menus/create/request-fields.adoc[]
+==== RESPONSE
+include::{snippets}/menus/create/http-response.adoc[]
+include::{snippets}/menus/create/response-fields.adoc[]
+
+
+=== 메뉴목록
+==== REQUEST
+include::{snippets}/menus/getMenus/http-request.adoc[]
+==== RESPONSE
+include::{snippets}/menus/getMenus/http-response.adoc[]
+include::{snippets}/menus/getMenus/response-fields.adoc[]

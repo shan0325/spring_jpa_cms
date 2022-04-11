@@ -1,12 +1,11 @@
 package com.spring.cms.repository.menu;
 
 import com.spring.cms.domain.Menu;
-import com.spring.cms.dto.MenuDto;
+import com.spring.cms.dto.menu.MenuQueryDto;
 
 import java.util.List;
 
 public interface MenuRepositoryCustom {
-    MenuDto.QueryResponse response(Long id);
-    List<MenuDto.AllMenusQueryResponse> findAllMenusDto();
-    List<Menu> findAllMenus();
+    MenuQueryDto.CreateResponseQuery findCreatedMenu(Long id);
+    List<MenuQueryDto.AllMenusResponseQuery> findMenus(boolean parentIsNull, List<Long> menuIds);
 }

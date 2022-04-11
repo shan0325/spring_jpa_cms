@@ -1,14 +1,12 @@
 package com.spring.cms.domain;
 
 import com.spring.cms.domain.common.BaseEntity;
-import com.spring.cms.dto.MenuDto;
+import com.spring.cms.dto.menu.MenuDto;
 import com.spring.cms.enums.MenuType;
-import javafx.scene.Parent;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JoinColumnOrFormula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ public class Menu extends BaseEntity {
     private Menu parent;
 
     @OneToMany(mappedBy = "parent")
+    @OrderBy("ord asc, createdDate desc")
     private List<Menu> child = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,7 +1,7 @@
-package com.spring.cms.dto;
+package com.spring.cms.dto.menu;
 
-import com.querydsl.core.annotations.QueryProjection;
 import com.spring.cms.annotation.Enum;
+import com.spring.cms.domain.Menu;
 import com.spring.cms.enums.MenuType;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +11,8 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MenuDto {
 
@@ -45,7 +47,7 @@ public class MenuDto {
     }
 
     @Data
-    public static class QueryResponse {
+    public static class CreateResponse {
         private Long id;
         private Long parentId;
         private Long topId;
@@ -61,45 +63,6 @@ public class MenuDto {
         private Long contentsId;
         private LocalDateTime createdDate;
         private LocalDateTime lastModifiedDate;
-
-        @QueryProjection
-        public QueryResponse(Long id, Long parentId, Long topId, Integer level, Integer ord, String name, String description, Character useYn, MenuType menuType, Long boardManagerId, String link, String linkTarget, Long contentsId, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
-            this.id = id;
-            this.parentId = parentId;
-            this.topId = topId;
-            this.level = level;
-            this.ord = ord;
-            this.name = name;
-            this.description = description;
-            this.useYn = useYn;
-            this.menuType = menuType;
-            this.boardManagerId = boardManagerId;
-            this.link = link;
-            this.linkTarget = linkTarget;
-            this.contentsId = contentsId;
-            this.createdDate = createdDate;
-            this.lastModifiedDate = lastModifiedDate;
-        }
-    }
-
-    @Data
-    public static class AllMenusQueryResponse {
-        private Long id;
-        private Long parentId;
-        private Long topId;
-        private Integer level;
-        private Integer ord;
-        private String name;
-
-        @QueryProjection
-        public AllMenusQueryResponse(Long id, Long parentId, Long topId, Integer level, Integer ord, String name) {
-            this.id = id;
-            this.parentId = parentId;
-            this.topId = topId;
-            this.level = level;
-            this.ord = ord;
-            this.name = name;
-        }
     }
 
     @Data
@@ -110,5 +73,20 @@ public class MenuDto {
         private Integer level;
         private Integer ord;
         private String name;
+        private List<AllMenusResponse> childMenus;
+
+        public AllMenusResponse(Menu menu) {
+            this.id = menu.getId();
+            this.parentId = menu.getParent() != null ? menu.getParent().getId() : null;
+            this.topId = menu.getTop() != null ? menu.getTop().getId() : null;
+            this.level = menu.getLevel();
+            this.ord = menu.getOrd();
+            this.name = menu.getName();
+            if (menu.getChild() != null && !menu.getChild().isEmpty()) {
+                this.childMenus = menu.getChild().stream()
+                        .map(AllMenusResponse::new)
+                        .collect(Collectors.toList());
+            }
+        }
     }
 }

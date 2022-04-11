@@ -1,11 +1,16 @@
 package com.spring.cms.service;
 
-import com.spring.cms.domain.*;
-import com.spring.cms.dto.MenuDto;
+import com.spring.cms.domain.BoardManager;
+import com.spring.cms.domain.Contents;
+import com.spring.cms.domain.Menu;
+import com.spring.cms.domain.MenuLink;
+import com.spring.cms.dto.menu.MenuDto;
+import com.spring.cms.dto.menu.MenuQueryDto;
 import com.spring.cms.enums.MenuLinkTarget;
 import com.spring.cms.enums.MenuType;
 import com.spring.cms.exception.BoardManagerException;
 import com.spring.cms.exception.ContentsException;
+import com.spring.cms.exception.MemberException;
 import com.spring.cms.exception.MenuException;
 import com.spring.cms.repository.BoardManagerRepository;
 import com.spring.cms.repository.ContentsRepository;
@@ -16,14 +21,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.spring.cms.exception.BoardManagerException.BoardManagerExceptionType.BOARD_MANAGER_ID_IS_NULL;
 import static com.spring.cms.exception.BoardManagerException.BoardManagerExceptionType.BOARD_MANAGER_NOT_FOUND;
 import static com.spring.cms.exception.ContentsException.ContentsExceptionType.CONTENTS_ID_IS_NULL;
 import static com.spring.cms.exception.ContentsException.ContentsExceptionType.CONTENTS_NOT_FOUND;
-import static com.spring.cms.exception.MenuException.MenuExceptionType.NOT_FOUND_PARENT_MENU;
-import static com.spring.cms.exception.MenuException.MenuExceptionType.NOT_FOUND_TOP_MENU;
+import static com.spring.cms.exception.MenuException.MenuExceptionType.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -36,7 +43,7 @@ public class MenuService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public MenuDto.QueryResponse createMenu(MenuDto.Create create) {
+    public MenuDto.CreateResponse createMenus(MenuDto.Create create) {
         Menu parentMenu = null;
         Menu topMenu = null;
         BoardManager boardManager = null;
@@ -75,11 +82,55 @@ public class MenuService {
         Menu menu = Menu.createMenu(create, parentMenu, topMenu, boardManager, menuLink, contents);
         menuRepository.save(menu);
 
-        return menuRepository.response(menu.getId());
+        //return menuRepository.findCreatedMenu(menu.getId());
+        return modelMapper.map(menu, MenuDto.CreateResponse.class);
     }
 
-    public List<MenuDto.AllMenusQueryResponse> getAllMenus() {
-        return menuRepository.findAllMenusDto();
+    public List<MenuDto.AllMenusResponse> getAllMenus() {
+        return menuRepository.findByParentOrderByOrd(null)
+                .orElseThrow(() -> new MenuException(NOT_FOUND_MENU))
+                .stream()
+                .map(MenuDto.AllMenusResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * ToOne 관계들을 먼저 조회하고, 여기서 얻은 식별자 menuId로 ToMany 관계인 child를 한꺼번에 조회
+     * MAP을 사용해서 매칭 성능 향상(O(1))
+     */
+    public List<MenuQueryDto.AllMenusResponseQuery> getAllMenusOpti() {
+        List<MenuQueryDto.AllMenusResponseQuery> menus = menuRepository.findMenus(true, null);
+        setChildMenusByRecursive(menus);
+        return menus;
+    }
+
+    public void setChildMenusByRecursive(List<MenuQueryDto.AllMenusResponseQuery> menus) {
+        if (menus == null || menus.isEmpty()) {
+            return;
+        }
+
+        List<MenuQueryDto.AllMenusResponseQuery> childAllMenus = new ArrayList<>();
+
+        Map<Long, List<MenuQueryDto.AllMenusResponseQuery>> menusChildMap = findMenusChildMap(toMenusIds(menus));
+        menus.forEach(m -> {
+            List<MenuQueryDto.AllMenusResponseQuery> childMenus = menusChildMap.get(m.getId());
+            m.setChildMenus(childMenus);
+            if (childMenus != null) {
+                childAllMenus.addAll(childMenus);
+            }
+        });
+        setChildMenusByRecursive(childAllMenus);
+    }
+
+    public Map<Long, List<MenuQueryDto.AllMenusResponseQuery>> findMenusChildMap(List<Long> menuIds) {
+        return menuRepository.findMenus( false, menuIds).stream()
+                .collect(Collectors.groupingBy(allMenusResponseQuery -> allMenusResponseQuery.getParentId()));
+    }
+
+    private List<Long> toMenusIds(List<MenuQueryDto.AllMenusResponseQuery> menus) {
+        return menus.stream()
+                .map(m -> m.getId())
+                .collect(Collectors.toList());
     }
 
 }

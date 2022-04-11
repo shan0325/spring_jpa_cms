@@ -2,7 +2,7 @@ package com.spring.cms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.cms.domain.Contents;
-import com.spring.cms.dto.MenuDto;
+import com.spring.cms.dto.menu.MenuDto;
 import com.spring.cms.repository.BoardManagerRepository;
 import com.spring.cms.repository.ContentsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +17,12 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,14 +65,14 @@ class MenuControllerTest {
                 .boardManagerId(1L)
                 .build();
 
-        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menu")
+        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menus")
                 .header("Authorization", "Bearer " + this.accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(create))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("menu/create",
+                .andDo(document("menus/create",
                         requestFields(
                                 fieldWithPath("parentId").type(JsonFieldType.NUMBER).description("상위메뉴아이디").optional(),
                                 fieldWithPath("topId").type(JsonFieldType.NUMBER).description("최상위메뉴아이디").optional(),
@@ -120,7 +123,7 @@ class MenuControllerTest {
                 .linkTarget("BLANK")
                 .build();
 
-        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menu")
+        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menus")
                 .header("Authorization", "Bearer " + this.accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(create))
@@ -143,7 +146,7 @@ class MenuControllerTest {
                 .menuType("MENU")
                 .build();
 
-        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menu")
+        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menus")
                 .header("Authorization", "Bearer " + this.accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(create))
@@ -170,10 +173,39 @@ class MenuControllerTest {
                 .contentsId(contents.getId())
                 .build();
 
-        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menu")
+        this.mockMvc.perform(post(RestControllerBase.API_URI_PREFIX + "/menus")
                 .header("Authorization", "Bearer " + this.accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(create))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getMenus() throws Exception {
+        this.mockMvc.perform(get(RestControllerBase.API_URI_PREFIX + "/menus")
+                .header("Authorization", "Bearer " + this.accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("menus/getMenus",
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("메뉴아이디"),
+                                fieldWithPath("[].parentId").type(JsonFieldType.NUMBER).description("상위메뉴아이디").optional(),
+                                fieldWithPath("[].topId").type(JsonFieldType.NUMBER).description("최상위메뉴아이디").optional(),
+                                fieldWithPath("[].level").type(JsonFieldType.NUMBER).description("메뉴뎁스"),
+                                fieldWithPath("[].ord").type(JsonFieldType.NUMBER).description("메뉴순서"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("메뉴명"),
+                                subsectionWithPath("[].childMenus").type(JsonFieldType.ARRAY).description("하위메뉴").optional()
+                        )
+                ));
+    }
+
+    @Test
+    public void getMenusOpti() throws Exception {
+        this.mockMvc.perform(get(RestControllerBase.API_URI_PREFIX + "/menus/opti")
+                .header("Authorization", "Bearer " + this.accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
