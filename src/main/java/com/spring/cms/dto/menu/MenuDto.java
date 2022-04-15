@@ -82,11 +82,69 @@ public class MenuDto {
             this.level = menu.getLevel();
             this.ord = menu.getOrd();
             this.name = menu.getName();
-            if (menu.getChild() != null && !menu.getChild().isEmpty()) {
-                this.childMenus = menu.getChild().stream()
-                        .map(AllMenusResponse::new)
-                        .collect(Collectors.toList());
-            }
+            this.childMenus = menu.getChild().stream()
+                    .map(AllMenusResponse::new)
+                    .collect(Collectors.toList());
         }
+    }
+
+    @Data
+    public static class MenuDetailResponse {
+        private Long id;
+        private Long parentId;
+        private Long topId;
+        private Integer level;
+        private Integer ord;
+        private String name;
+        private String description;
+        private Character useYn;
+        private MenuType menuType;
+        private Long boardManagerId;
+        private String link;
+        private String linkTarget;
+        private Long contentsId;
+        private LocalDateTime createdDate;
+        private LocalDateTime lastModifiedDate;
+    }
+
+    @Getter
+    @Builder
+    @ToString
+    public static class Update {
+        @NotBlank(message = "메뉴명을 입력해주세요")
+        private String name;
+
+        private String description;
+
+        @NotNull(message = "사용유무를 입력해주세요")
+        private Character useYn;
+
+        @Enum(enumClass = MenuType.class)
+        @NotBlank(message = "메뉴타입을 입력해주세요")
+        private String menuType;
+
+        private Long boardManagerId;
+        private String link;
+        private String linkTarget;
+        private Long contentsId;
+    }
+
+    @Data
+    public static class UpdateResponse {
+        private Long id;
+        private Long parentId;
+        private Long topId;
+        private Integer level;
+        private Integer ord;
+        private String name;
+        private String description;
+        private Character useYn;
+        private MenuType menuType;
+        private Long boardManagerId;
+        private String link;
+        private String linkTarget;
+        private Long contentsId;
+        private LocalDateTime createdDate;
+        private LocalDateTime lastModifiedDate;
     }
 }

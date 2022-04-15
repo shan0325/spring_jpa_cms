@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface MenuRepository extends JpaRepository<Menu, Long>, MenuRepositoryCustom {
     Optional<List<Menu>> findByParentOrderByOrd(Menu parent);
 
+    Integer countByParent(Menu parent);
+
 }

@@ -21,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class MenuService {
     private final ContentsRepository contentsRepository;
     private final MenuLinkRepository menuLinkRepository;
     private final ModelMapper modelMapper;
+
 
     @Transactional
     public MenuDto.CreateResponse createMenus(MenuDto.Create create) {
@@ -133,4 +135,58 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
+    public MenuDto.MenuDetailResponse getMenuDetail(Long menuId) {
+        Menu findMenu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new MenuException(NOT_FOUND_MENU));
+        return modelMapper.map(findMenu, MenuDto.MenuDetailResponse.class);
+    }
+
+    @Transactional
+    public MenuDto.UpdateResponse updateMenu(Long menuId, MenuDto.Update update) {
+        BoardManager boardManager = null;
+        MenuLink menuLink = null;
+        Contents contents = null;
+
+        Menu findMenu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new MenuException(NOT_FOUND_MENU));
+
+        MenuType menuType = MenuType.valueOf(update.getMenuType());
+        if (!findMenu.getMenuType().equals(menuType)) {
+            if (menuType.equals(MenuType.BOARD)) {
+                Long boardManagerId = update.getBoardManagerId();
+                if (boardManagerId == null) {
+                    throw new BoardManagerException(BOARD_MANAGER_ID_IS_NULL);
+                }
+                boardManager = boardManagerRepository.findById(boardManagerId)
+                        .orElseThrow(() -> new BoardManagerException(BOARD_MANAGER_NOT_FOUND));
+            } else if (menuType.equals(MenuType.LINK)) {
+                menuLink = MenuLink.createMenuLink(update.getLink(), MenuLinkTarget.valueOf(update.getLinkTarget()));
+                menuLinkRepository.save(menuLink);
+            } else if (menuType.equals(MenuType.CONTENTS)) {
+                Long contentsId = update.getContentsId();
+                if (contentsId == null) {
+                    throw new ContentsException(CONTENTS_ID_IS_NULL);
+                }
+                contents = contentsRepository.findById(contentsId)
+                        .orElseThrow(() -> new ContentsException(CONTENTS_NOT_FOUND));
+            }
+        }
+        findMenu.updateMenu(update, boardManager, menuLink, contents);
+
+        return modelMapper.map(findMenu, MenuDto.UpdateResponse.class);
+    }
+
+    @Transactional
+    public void deleteMenu(Long menuId) {
+        Menu findMenu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new MenuException(NOT_FOUND_MENU));
+
+        Integer childCount = menuRepository.countByParent(findMenu);
+        if (childCount > 0) {
+            throw new MenuException(CHILD_MENU_EXISTS_CANNOT_DELETE);
+        }
+
+        //TODO 삭제 처리
+        menuRepository.delete(findMenu);
+    }
 }

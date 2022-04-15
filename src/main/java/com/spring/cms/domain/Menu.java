@@ -55,7 +55,7 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "board_manager_id")
     private BoardManager boardManager;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "menu_link_id")
     private MenuLink menuLink;
 
@@ -103,5 +103,16 @@ public class Menu extends BaseEntity {
 
         menu.addParentMenu(parent);
         return menu;
+    }
+
+    //==수정 메서드==//
+    public void updateMenu(MenuDto.Update update, BoardManager boardManager, MenuLink menuLink, Contents contents) {
+        this.name = update.getName();
+        this.description = update.getDescription();
+        this.useYn = update.getUseYn();
+        this.menuType = MenuType.valueOf(update.getMenuType());
+        this.boardManager = boardManager;
+        this.menuLink = menuLink;
+        this.contents = contents;
     }
 }

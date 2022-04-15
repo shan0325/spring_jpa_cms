@@ -27,3 +27,27 @@ include::{snippets}/menus/getMenus/http-request.adoc[]
 ==== RESPONSE
 include::{snippets}/menus/getMenus/http-response.adoc[]
 include::{snippets}/menus/getMenus/response-fields.adoc[]
+
+
+=== 메뉴상세
+==== REQUEST
+include::{snippets}/menus/menuDetail/http-request.adoc[]
+==== RESPONSE
+include::{snippets}/menus/menuDetail/http-response.adoc[]
+include::{snippets}/menus/menuDetail/response-fields.adoc[]
+
+
+=== 메뉴수정
+==== REQUEST
+include::{snippets}/menus/update/http-request.adoc[]
+include::{snippets}/menus/update/request-fields.adoc[]
+==== RESPONSE
+include::{snippets}/menus/update/http-response.adoc[]
+include::{snippets}/menus/update/response-fields.adoc[]
+
+
+=== 메뉴삭제
+==== REQUEST
+include::{snippets}/menus/delete/http-request.adoc[]
+==== RESPONSE
+include::{snippets}/menus/delete/http-response.adoc[]
